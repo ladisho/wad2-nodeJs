@@ -12,8 +12,9 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
-app.use(express.static('public'));
+// app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
+
 
 app.listen(port, () => {
     console.info(`Server running at ${port}`);
