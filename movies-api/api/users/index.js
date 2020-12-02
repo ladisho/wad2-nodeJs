@@ -17,6 +17,13 @@ router.get('/:userName/favourites', (req, res, next) => {
     ).catch(next);
 });
 
+router.get('/:userName/genres', (req, res, next) => {
+    const user = req.params.userName;
+    User.find({ username: user }).then(
+        user => res.status(201).send(user.genres)
+    ).catch(next);
+});
+
 
 // register
 router.post('/', (req, res, next) => {
@@ -32,6 +39,24 @@ router.post('/:userName/favourites', (req, res, next) => {
                 (user.favourites) ? user.favourites.push(newFavourite) : user.favourites = [newFavourite];
                 console.log(user);
                 User.findOneAndUpdate(query, { favourites: user.favourites }, {
+                    new: true
+                }).then(user => res.status(201).send(user));
+            }
+        ).catch(next);
+    } else {
+        res.status(401).send("Unable to find user")
+    }
+});
+
+router.post('/:userName/genres', (req, res, next) => {
+    const newGenre = req.body;
+    const query = { username: req.params.userName };
+    if (newGenre && newGenre.id) {
+        User.find(query).then(
+            user => {
+                (user.genres) ? user.genres.push(newGenre) : user.genres = [newGenre];
+                console.log(user);
+                User.findOneAndUpdate(query, { genres: user.genres }, {
                     new: true
                 }).then(user => res.status(201).send(user));
             }
