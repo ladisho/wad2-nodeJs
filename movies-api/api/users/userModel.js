@@ -19,4 +19,17 @@ const UserSchema = new Schema({
     genres: [GenreSchema]
 });
 
+UserSchema.statics.findByUserName = function (username) {
+    return this.findOne({ username: username });
+};
+
+UserSchema.methods.comparePassword = function (candidatePassword) {
+    const isMatch = this.password === candidatePassword;
+    if (!isMatch) {
+        throw new Error('Password mismatch');
+    }
+    return this;
+};
+
+
 export default mongoose.model('User', UserSchema);
