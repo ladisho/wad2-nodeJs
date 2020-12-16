@@ -2,6 +2,7 @@ import express from 'express';
 import User from './userModel';
 import jwt from 'jsonwebtoken';
 import movieModel from "../movies/movieModel";
+import { movies } from '../../seedData/movies';
 
 const router = express.Router(); // eslint-disable-line
 
@@ -73,12 +74,17 @@ router.post('/', (req, res, next) => {
 router.post('/:userName/favourites', async (req, res, next) => {
     const newFavourite = req.body.id;
     const userName = req.params.userName;
-    const movie = await movieModel.findByMovieDBId(newFavourite);
-    const user = await User.findByUserName(userName);
-    await user.favourites.push(movie._id);
-    await user.save();
-    res.status(201).json(user);
-});
+    const movie = await movieModel.findByMovieDBId(newFavourite).catch(next);
+    const user = await User.findByUserName(userName).catch(next);
+    if (!user.favourites.includes(movie._id)) {
+        await user.favourites.push(movie._id).catch(next);
+        await user.save();
+        res.status(201).json(user);
+    } else {
+        res.status(403).json({"status":403,"message":"Favourite Already Exists"}); 
+    }
+    
+})
 
 
 router.post('/:userName/genres', (req, res, next) => {
