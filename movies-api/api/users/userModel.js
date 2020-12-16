@@ -13,7 +13,13 @@ const GenreSchema = new Schema({
 
 const UserSchema = new Schema({
     username: { type: String, unique: true, required: true },
-    password: { type: String, required: true, regex: "^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$"},
+    password: { type: String, required: true, validate: {
+        validator: function(v) {
+            var re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{5,}$/;
+            return (v == null || v.trim().length < 1) || re.test(v)
+        },
+        message: 'Provided password is invalid.'
+    }},
     favourites: [{type: mongoose.Schema.Types.ObjectId, ref: 'Movies'}],
     genres: [GenreSchema]
 });
